@@ -20,6 +20,14 @@ class Client(db.Model):
         self.email = email
         self.telefone = telefone
 
+    def to_dict(self):
+        return {
+        "id": self.id,
+        "nome": self.nome,
+        "email": self.email,
+        "cpf": self.cpf,
+        "telefone": self.telefone
+            }
 # Modelo de Venda
 class Sale(db.Model):
     __tablename__ = "vendas"
