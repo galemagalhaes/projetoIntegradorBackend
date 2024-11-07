@@ -1,8 +1,8 @@
 swagger_template = {
     "swagger": "2.0",
     "info": {
-        "title": "API de Autenticação, Gerenciamento de Usuários e Clientes",
-        "description": "API para autenticação, gerenciamento de usuários e clientes.",
+        "title": "API de Autenticação, Gerenciamento de Usuários, Clientes e Vendas",
+        "description": "API para autenticação, gerenciamento de usuários, clientes e vendas.",
         "version": "1.0.0"
     },
     "paths": {
@@ -158,18 +158,7 @@ swagger_template = {
                     }
                 ],
                 "responses": {
-                    "201": {
-                        "description": "Cliente criado com sucesso",
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "cpf": {"type": "string"},
-                                "nome": {"type": "string"},
-                                "email": {"type": "string"},
-                                "telefone": {"type": "string"}
-                            }
-                        }
-                    },
+                    "201": {"description": "Cliente criado com sucesso"},
                     "400": {"description": "Erro: CPF já cadastrado"}
                 }
             },
@@ -200,21 +189,10 @@ swagger_template = {
                 "summary": "Busca um cliente pelo CPF",
                 "tags": ["Cliente"],
                 "parameters": [
-                    {"in": "path", "name": "cpf", "required": True, "type": "string", "description": "CPF do cliente"}
+                    {"in": "path", "name": "cpf", "required": True, "type": "string"}
                 ],
                 "responses": {
-                    "200": {
-                        "description": "Cliente encontrado",
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "cpf": {"type": "string"},
-                                "nome": {"type": "string"},
-                                "email": {"type": "string"},
-                                "telefone": {"type": "string"}
-                            }
-                        }
-                    },
+                    "200": {"description": "Cliente encontrado"},
                     "404": {"description": "Cliente não encontrado"}
                 }
             },
@@ -222,7 +200,7 @@ swagger_template = {
                 "summary": "Atualiza as informações de um cliente pelo CPF",
                 "tags": ["Cliente"],
                 "parameters": [
-                    {"in": "path", "name": "cpf", "required": True, "type": "string", "description": "CPF do cliente"},
+                    {"in": "path", "name": "cpf", "required": True, "type": "string"},
                     {
                         "in": "body",
                         "name": "body",
@@ -239,18 +217,7 @@ swagger_template = {
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "Cliente atualizado com sucesso",
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "cpf": {"type": "string"},
-                                "nome": {"type": "string"},
-                                "email": {"type": "string"},
-                                "telefone": {"type": "string"}
-                            }
-                        }
-                    },
+                    "200": {"description": "Cliente atualizado com sucesso"},
                     "404": {"description": "Cliente não encontrado"}
                 }
             },
@@ -258,11 +225,109 @@ swagger_template = {
                 "summary": "Deleta um cliente pelo CPF",
                 "tags": ["Cliente"],
                 "parameters": [
-                    {"in": "path", "name": "cpf", "required": True, "type": "string", "description": "CPF do cliente"}
+                    {"in": "path", "name": "cpf", "required": True, "type": "string"}
                 ],
                 "responses": {
                     "200": {"description": "Cliente deletado com sucesso"},
                     "404": {"description": "Cliente não encontrado"}
+                }
+            }
+        },
+        "/sale": {
+            "post": {
+                "summary": "Cria uma nova venda",
+                "tags": ["Vendas"],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Dados da venda",
+                        "required": True,
+                        "schema": {
+                            "type": "object",
+                            "required": ["data", "cliente_id", "valor", "status"],
+                            "properties": {
+                                "data": {"type": "string", "description": "Data da venda"},
+                                "cliente_id": {"type": "number", "description": "ID do cliente"},
+                                "valor": {"type": "number", "description": "Valor da venda"},
+                                "status": {"type": "boolean", "description": "Status da venda"}
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {"description": "Venda criada com sucesso"},
+                    "400": {"description": "Erro: ID de venda já cadastrado"}
+                }
+            },
+            "get": {
+                "summary": "Retorna a lista de vendas",
+                "tags": ["Vendas"],
+                "responses": {
+                    "200": {
+                        "description": "Lista de vendas",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "data": {"type": "string"},
+                                    "cliente": {"type": "string"},
+                                    "valor": {"type": "number"},
+                                    "status": {"type": "boolean"}
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/sale/{id}": {
+            "get": {
+                "summary": "Busca uma venda pelo ID",
+                "tags": ["Vendas"],
+                "parameters": [
+                    {"in": "path", "name": "id", "required": True, "type": "string"}
+                ],
+                "responses": {
+                    "200": {"description": "Venda encontrada"},
+                    "404": {"description": "Venda não encontrada"}
+                }
+            },
+            "put": {
+                "summary": "Atualiza as informações de uma venda pelo ID",
+                "tags": ["Vendas"],
+                "parameters": [
+                    {"in": "path", "name": "id", "required": True, "type": "string"},
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Dados atualizados da venda",
+                        "required": True,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "data": {"type": "string", "description": "Data da venda"},
+                                "status": {"type": "boolean", "description": "Status da venda"},
+                                "valor": {"type": "number", "description": "Valor da venda"}
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {"description": "Venda atualizada com sucesso"},
+                    "404": {"description": "Venda não encontrada"}
+                }
+            },
+            "delete": {
+                "summary": "Deleta uma venda pelo ID",
+                "tags": ["Vendas"],
+                "parameters": [
+                    {"in": "path", "name": "id", "required": True, "type": "string"}
+                ],
+                "responses": {
+                    "200": {"description": "Venda deletada com sucesso"},
+                    "404": {"description": "Venda não encontrada"}
                 }
             }
         }
