@@ -1,15 +1,16 @@
 from flask import request, jsonify
 from flasgger import swag_from
-# from werkzeug.security import generate_password_hash
 from app.models import db, Client
-# from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required
 from app.swagger_config import swagger_template
 
 def init_client_routes(app):
     @app.route("/client", methods=["POST"])
+    @jwt_required()
     @swag_from({
         "tags": ["Cliente"],
         "summary": "Cria um novo cliente",
+        "security": [{"Bearer": []}],
         "parameters": swagger_template["paths"]["/client"]["post"]["parameters"],
         "responses": swagger_template["paths"]["/client"]["post"]["responses"]
     })
@@ -25,10 +26,11 @@ def init_client_routes(app):
         return jsonify(new_client.to_dict()), 201
     
     @app.route("/client", methods=["GET"])
-    # @jwt_required()
+    @jwt_required()
     @swag_from({
         "tags": ["Cliente"],
         "summary": "Retorna a lista de clientes",
+        "security": [{"Bearer": []}],
         "responses": swagger_template["paths"]["/client"]["get"]["responses"]
         })
     def get_clients():
@@ -37,10 +39,11 @@ def init_client_routes(app):
         return jsonify([client.to_dict() for client in clients]), 200
     
     @app.route("/client/<string:cpf>", methods=["GET"])
-    # @jwt_required()
+    @jwt_required()
     @swag_from({
         "tags": ["Cliente"],
         "summary": "Busca um cliente pelo cpf",
+        "security": [{"Bearer": []}],
         "parameters": swagger_template["paths"]["/client/{cpf}"]["get"]["parameters"],
         "responses": swagger_template["paths"]["/client/{cpf}"]["get"]["responses"]
         })
@@ -52,10 +55,11 @@ def init_client_routes(app):
         return jsonify(client.to_dict()), 200
     
     @app.route("/client/<string:cpf>", methods=["PUT"])
-    # @jwt_required()
+    @jwt_required()
     @swag_from({
         "tags": ["Cliente"],
         "summary": "Atualiza as informações de um cliente pelo cpf",
+        "security": [{"Bearer": []}],
         "parameters": swagger_template["paths"]["/client/{cpf}"]["put"]["parameters"],
         "responses": swagger_template["paths"]["/client/{cpf}"]["put"]["responses"]
         })
@@ -79,10 +83,11 @@ def init_client_routes(app):
         return jsonify(client.to_dict()), 200
     
     @app.route("/client/<string:cpf>", methods=["DELETE"])
-    # @jwt_required()
+    @jwt_required()
     @swag_from({
         "tags": ["Cliente"],
         "summary": "Deleta um cliente pelo cpf",
+        "security": [{"Bearer": []}],
         "parameters": swagger_template["paths"]["/client/{cpf}"]["delete"]["parameters"],
         "responses": swagger_template["paths"]["/client/{cpf}"]["delete"]["responses"]
         })

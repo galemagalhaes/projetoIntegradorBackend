@@ -2,14 +2,17 @@ from datetime import datetime, timedelta
 from flask import jsonify
 from flasgger import swag_from
 from app.swagger_config import swagger_template
-from sqlalchemy import extract, func
+from sqlalchemy import extract
+from flask_jwt_extended import jwt_required
 from app.models import db, Sale, Receita_total_mes, Client
 
 def init_dashboard_routes(app): 
     @app.route("/dashboard", methods=["GET"])
+    @jwt_required()
     @swag_from({
         "tags": ["Dashboard"],
         "summary": "Busca os valores do dashboard",
+        "security": [{"Bearer": []}],
         "responses": swagger_template["paths"].get("/dashboard", {}).get("get", {}).get("responses", {})
     })
     def dashboard():

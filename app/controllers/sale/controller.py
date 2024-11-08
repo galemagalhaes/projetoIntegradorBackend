@@ -2,13 +2,16 @@ from flask import request, jsonify
 from flasgger import swag_from
 from datetime import datetime
 from app.models import db, Sale, Receita_total_mes
+from flask_jwt_extended import jwt_required
 from app.swagger_config import swagger_template
 
 def init_sale_routes(app):
     @app.route("/sale", methods=["POST"])
+    @jwt_required()
     @swag_from({
         "tags": ["Vendas"],
         "summary": "Cria uma nova venda",
+        "security": [{"Bearer": []}],
         "parameters": swagger_template["paths"]["/sale"]["post"]["parameters"],
         "responses": swagger_template["paths"]["/sale"]["post"]["responses"]
     })
@@ -53,9 +56,11 @@ def init_sale_routes(app):
         return jsonify(new_sale.to_dict()), 201
 
     @app.route("/sale", methods=["GET"])
+    @jwt_required()
     @swag_from({
         "tags": ["Vendas"],
         "summary": "Retorna a lista de vendas",
+        "security": [{"Bearer": []}],
         "responses": swagger_template["paths"]["/sale"]["get"]["responses"]
     })
     def get_sales():
@@ -64,9 +69,11 @@ def init_sale_routes(app):
         return jsonify([sale.to_dict() for sale in sales]), 200
 
     @app.route("/sale/<int:id>", methods=["GET"])
+    @jwt_required()
     @swag_from({
         "tags": ["Vendas"],
         "summary": "Busca uma venda pelo id",
+        "security": [{"Bearer": []}],
         "parameters": swagger_template["paths"]["/sale/{id}"]["get"]["parameters"],
         "responses": swagger_template["paths"]["/sale/{id}"]["get"]["responses"]
     })
@@ -78,9 +85,11 @@ def init_sale_routes(app):
         return jsonify(sale.to_dict()), 200
 
     @app.route("/sale/<int:id>", methods=["PUT"])
+    @jwt_required()
     @swag_from({
         "tags": ["Vendas"],
         "summary": "Atualiza as informações de uma venda pelo id",
+        "security": [{"Bearer": []}],
         "parameters": swagger_template["paths"]["/sale/{id}"]["put"]["parameters"],
         "responses": swagger_template["paths"]["/sale/{id}"]["put"]["responses"]
     })
@@ -104,9 +113,11 @@ def init_sale_routes(app):
         return jsonify(sale.to_dict()), 200
 
     @app.route("/sale/<int:id>", methods=["DELETE"])
+    @jwt_required()
     @swag_from({
         "tags": ["Vendas"],
         "summary": "Deleta uma venda pelo id",
+        "security": [{"Bearer": []}],
         "parameters": swagger_template["paths"]["/sale/{id}"]["delete"]["parameters"],
         "responses": swagger_template["paths"]["/sale/{id}"]["delete"]["responses"]
     })

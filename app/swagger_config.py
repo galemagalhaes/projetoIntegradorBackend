@@ -167,6 +167,11 @@ swagger_template = {
             "post": {
                 "summary": "Cria um novo cliente",
                 "tags": ["Cliente"],
+                "security": [
+                {
+                    "Bearer": []
+                }
+            ],
                 "parameters": [
                     {
                         "in": "body",
@@ -193,6 +198,11 @@ swagger_template = {
             "get": {
                 "summary": "Retorna a lista de clientes",
                 "tags": ["Cliente"],
+                "security": [
+                {
+                    "Bearer": []
+                }
+            ],
                 "responses": {
                     "200": {
                         "description": "Lista de clientes",
@@ -216,6 +226,11 @@ swagger_template = {
             "get": {
                 "summary": "Busca um cliente pelo CPF",
                 "tags": ["Cliente"],
+                "security": [
+                {
+                    "Bearer": []
+                }
+            ],
                 "parameters": [
                     {"in": "path", "name": "cpf", "required": True, "type": "string"}
                 ],
@@ -227,6 +242,11 @@ swagger_template = {
             "put": {
                 "summary": "Atualiza as informações de um cliente pelo CPF",
                 "tags": ["Cliente"],
+                "security": [
+                {
+                    "Bearer": []
+                }
+            ],
                 "parameters": [
                     {"in": "path", "name": "cpf", "required": True, "type": "string"},
                     {
@@ -252,6 +272,11 @@ swagger_template = {
             "delete": {
                 "summary": "Deleta um cliente pelo CPF",
                 "tags": ["Cliente"],
+                "security": [
+                {
+                    "Bearer": []
+                }
+            ],
                 "parameters": [
                     {"in": "path", "name": "cpf", "required": True, "type": "string"}
                 ],
@@ -265,6 +290,11 @@ swagger_template = {
             "post": {
                 "summary": "Cria uma nova venda",
                 "tags": ["Vendas"],
+                "security": [
+                {
+                    "Bearer": []
+                }
+            ],
                 "parameters": [
                     {
                         "in": "body",
@@ -291,6 +321,11 @@ swagger_template = {
             "get": {
                 "summary": "Retorna a lista de vendas",
                 "tags": ["Vendas"],
+                "security": [
+                {
+                    "Bearer": []
+                }
+            ],
                 "responses": {
                     "200": {
                         "description": "Lista de vendas",
@@ -314,6 +349,11 @@ swagger_template = {
             "get": {
                 "summary": "Busca uma venda pelo ID",
                 "tags": ["Vendas"],
+                "security": [
+                {
+                    "Bearer": []
+                }
+            ],
                 "parameters": [
                     {"in": "path", "name": "id", "required": True, "type": "string"}
                 ],
@@ -325,6 +365,11 @@ swagger_template = {
             "put": {
                 "summary": "Atualiza as informações de uma venda pelo ID",
                 "tags": ["Vendas"],
+                "security": [
+                {
+                    "Bearer": []
+                }
+            ],
                 "parameters": [
                     {"in": "path", "name": "id", "required": True, "type": "string"},
                     {
@@ -350,6 +395,11 @@ swagger_template = {
             "delete": {
                 "summary": "Deleta uma venda pelo ID",
                 "tags": ["Vendas"],
+                "security": [
+                {
+                    "Bearer": []
+                }
+            ],
                 "parameters": [
                     {"in": "path", "name": "id", "required": True, "type": "string"}
                 ],
@@ -363,6 +413,11 @@ swagger_template = {
             "get": {
                 "summary": "Busca os valores do dashboard",
                 "tags": ["Dashboard"],
+                "security": [
+                {
+                    "Bearer": []
+                }
+            ],
                 "responses": {
                     "200": {
                         "description": "Dados do dashboard recuperados com sucesso",
