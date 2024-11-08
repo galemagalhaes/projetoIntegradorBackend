@@ -1,8 +1,9 @@
 from flask import Flask
 from flasgger import Swagger
 from .models import db, DATABASE_URI, TRACK_MODIFICATIONS
-from .controllers import init_login_routes, init_user_routes, init_client_routes, init_sale_routes
+from .controllers import init_login_routes, init_user_routes, init_client_routes, init_sale_routes, init_dashboard_routes
 from flask_jwt_extended import JWTManager
+from .swagger_config import swagger_template
 
 
 def create_app():
@@ -19,12 +20,13 @@ def create_app():
     with app.app_context():
         db.create_all()
 
-    swagger = Swagger(app)
+    Swagger(app, template=swagger_template)
 
     init_login_routes(app)
     init_user_routes(app)
     init_client_routes(app)
     init_sale_routes(app)
+    init_dashboard_routes(app)
 
     @app.route("/")
     def home():

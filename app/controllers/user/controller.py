@@ -2,7 +2,7 @@ from flask import request, jsonify
 from flasgger import swag_from
 from werkzeug.security import generate_password_hash
 from app.models import db, User
-# from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required
 from app.swagger_config import swagger_template
 
 def init_user_routes(app):
@@ -26,10 +26,11 @@ def init_user_routes(app):
         return jsonify(new_user.to_dict()), 201
     
     @app.route("/user", methods=["GET"])
-    # @jwt_required()
+    @jwt_required()
     @swag_from({
         "tags": ["Usuário"],
         "summary": "Retorna a lista de usuários",
+        "security": [{"Bearer": []}],
         "responses": swagger_template["paths"]["/user"]["get"]["responses"]
         })
     def get_users():
@@ -38,10 +39,11 @@ def init_user_routes(app):
         return jsonify([user.to_dict() for user in users]), 200
     
     @app.route("/user/<string:email>", methods=["GET"])
-    # @jwt_required()
+    @jwt_required()
     @swag_from({
         "tags": ["Usuário"],
         "summary": "Busca um usuário pelo email",
+        "security": [{"Bearer": []}],
         "parameters": swagger_template["paths"]["/user/{email}"]["get"]["parameters"],
         "responses": swagger_template["paths"]["/user/{email}"]["get"]["responses"]
         })
@@ -53,10 +55,11 @@ def init_user_routes(app):
         return jsonify(user.to_dict()), 200
     
     @app.route("/user/<string:email>", methods=["PUT"])
-    # @jwt_required()
+    @jwt_required()
     @swag_from({
         "tags": ["Usuário"],
         "summary": "Atualiza as informações de um usuário pelo email",
+        "security": [{"Bearer": []}],
         "parameters": swagger_template["paths"]["/user/{email}"]["put"]["parameters"],
         "responses": swagger_template["paths"]["/user/{email}"]["put"]["responses"]
         })
@@ -77,10 +80,11 @@ def init_user_routes(app):
         return jsonify(user.to_dict()), 200
     
     @app.route("/user/<string:email>", methods=["DELETE"])
-    # @jwt_required()
+    @jwt_required()
     @swag_from({
         "tags": ["Usuário"],
         "summary": "Deleta um usuário pelo email",
+        "security": [{"Bearer": []}],
         "parameters": swagger_template["paths"]["/user/{email}"]["delete"]["parameters"],
         "responses": swagger_template["paths"]["/user/{email}"]["delete"]["responses"]
         })

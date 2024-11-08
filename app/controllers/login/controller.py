@@ -22,8 +22,9 @@ def init_login_routes(app):
 
         if user and check_password_hash(user.senha, data.get("senha")):
             token = jwt.encode({
+                "sub": user.id, 
                 "user_id": user.id,
-                "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+                "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=6)
                 }, str(app.config["JWT_SECRET_KEY"]), algorithm="HS256")
             return jsonify(access_token=token), 200
         

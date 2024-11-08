@@ -5,6 +5,14 @@ swagger_template = {
         "description": "API para autenticação, gerenciamento de usuários, clientes e vendas.",
         "version": "1.0.0"
     },
+    "securityDefinitions": {
+    "Bearer": {
+        "type": "apiKey",
+        "name": "Authorization",
+        "in": "header",
+        "description": "Insira o token JWT com o prefixo 'Bearer '"
+        }
+    },
     "paths": {
         "/login": {
             "post": {
@@ -22,9 +30,9 @@ swagger_template = {
                             "properties": {
                                 "email": {"type": "string", "description": "E-mail do usuário"},
                                 "senha": {"type": "string", "description": "Senha do usuário"}
-                            }
-                        }
-                    }
+                                },
+                            },
+                        },
                 ],
                 "responses": {
                     "200": {
@@ -69,6 +77,11 @@ swagger_template = {
             "get": {
                 "summary": "Retorna a lista de usuários",
                 "tags": ["Usuário"],
+                "security": [
+                {
+                    "Bearer": []
+                }
+            ],
                 "responses": {
                     "200": {
                         "description": "Lista de usuários",
@@ -91,6 +104,11 @@ swagger_template = {
             "get": {
                 "summary": "Busca um usuário pelo email",
                 "tags": ["Usuário"],
+                "security": [
+                {
+                    "Bearer": []
+                }
+            ],
                 "parameters": [
                     {"in": "path", "name": "email", "required": True, "type": "string"}
                 ],
@@ -102,6 +120,11 @@ swagger_template = {
             "put": {
                 "summary": "Atualiza as informações de um usuário pelo email",
                 "tags": ["Usuário"],
+                "security": [
+                {
+                    "Bearer": []
+                }
+            ],                
                 "parameters": [
                     {"in": "path", "name": "email", "required": True, "type": "string"},
                     {
@@ -126,6 +149,11 @@ swagger_template = {
             "delete": {
                 "summary": "Deleta um usuário pelo email",
                 "tags": ["Usuário"],
+                "security": [
+                {
+                    "Bearer": []
+                }
+            ],                
                 "parameters": [
                     {"in": "path", "name": "email", "required": True, "type": "string"}
                 ],
@@ -245,12 +273,12 @@ swagger_template = {
                         "required": True,
                         "schema": {
                             "type": "object",
-                            "required": ["data", "cliente_id", "valor", "status"],
+                            "required": ["data", "cliente_id", "valor", "pendente"],
                             "properties": {
                                 "data": {"type": "string", "description": "Data da venda"},
                                 "cliente_id": {"type": "number", "description": "ID do cliente"},
                                 "valor": {"type": "number", "description": "Valor da venda"},
-                                "status": {"type": "boolean", "description": "Status da venda"}
+                                "pendente": {"type": "boolean", "description": "Status da venda"}
                             }
                         }
                     }
@@ -274,7 +302,7 @@ swagger_template = {
                                     "data": {"type": "string"},
                                     "cliente": {"type": "string"},
                                     "valor": {"type": "number"},
-                                    "status": {"type": "boolean"}
+                                    "pendente": {"type": "boolean"}
                                 }
                             }
                         }
@@ -308,7 +336,7 @@ swagger_template = {
                             "type": "object",
                             "properties": {
                                 "data": {"type": "string", "description": "Data da venda"},
-                                "status": {"type": "boolean", "description": "Status da venda"},
+                                "pendente": {"type": "boolean", "description": "Status da venda"},
                                 "valor": {"type": "number", "description": "Valor da venda"}
                             }
                         }
@@ -328,6 +356,39 @@ swagger_template = {
                 "responses": {
                     "200": {"description": "Venda deletada com sucesso"},
                     "404": {"description": "Venda não encontrada"}
+                }
+            }
+        },
+        "/dashboard": {
+            "get": {
+                "summary": "Busca os valores do dashboard",
+                "tags": ["Dashboard"],
+                "responses": {
+                    "200": {
+                        "description": "Dados do dashboard recuperados com sucesso",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "total_clients": {"type": "integer", "description": "Total de clientes cadastrados"},
+                                "total_vendas_mes": {"type": "integer", "description": "Total de vendas no mês atual"},
+                                "receita_mes_atual": {"type": "number", "format": "float", "description": "Receita total do mês atual"},
+                                "total_vendas_pendentes": {"type": "integer", "description": "Total de vendas pendentes"},
+                                "grafico": {
+                                    "type": "array",
+                                    "description": "Dados de receita dos últimos 12 meses",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "ano": {"type": "integer", "description": "Ano"},
+                                            "mes": {"type": "integer", "description": "Mês"},
+                                            "receita": {"type": "number", "format": "float", "description": "Receita do mês"}
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {"description": "Erro ao recuperar os dados do dashboard"}
                 }
             }
         }

@@ -36,13 +36,13 @@ class Sale(db.Model):
     cliente_id = db.Column(db.Integer, db.ForeignKey("clientes.id"), nullable=False)
     data = db.Column(db.Date, nullable=False)
     valor = db.Column(db.Float, nullable=False)
-    status = db.Column(db.Boolean, default=False)
+    pendente = db.Column(db.Boolean, default=True)
 
-    def __init__(self, cliente_id, data, valor, status=False):
+    def __init__(self, cliente_id, data, valor, pendente=True):
         self.cliente_id = cliente_id
         self.data = data
         self.valor = valor
-        self.status = status
+        self.pendente = pendente
 
     def to_dict(self):
         return {
@@ -50,7 +50,7 @@ class Sale(db.Model):
             "cliente_id": self.cliente_id,
             "data": self.data.isoformat() if self.data else None,
             "valor": self.valor,
-            "status": self.status
+            "pendente": self.pendente
         }
 
 # Modelo de Usuario
@@ -72,3 +72,18 @@ class User(db.Model):
             "nome": self.nome,
             "email": self.email
         }
+
+# Modelo Receita total mês
+class Receita_total_mes(db.Model):
+    __tablename__ = "receita_total"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    ano = db.Column(db.Integer, nullable=False)
+    mes = db.Column(db.Integer, nullable=False)
+    receita_total_mes = db.Column(db.Float, nullable=False)
+
+    def __init__(self, ano, mes, receita_total_mes):
+        self.ano = ano
+        self.mes = mes
+        self.receita_total_mes = receita_total_mes
+
+    
