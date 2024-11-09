@@ -23,9 +23,9 @@ class Client(db.Model):
     def to_dict(self):
         return {
             "id": self.id,
+            "cpf": self.cpf,
             "nome": self.nome,
             "email": self.email,
-            "cpf": self.cpf,
             "telefone": self.telefone
         }
 

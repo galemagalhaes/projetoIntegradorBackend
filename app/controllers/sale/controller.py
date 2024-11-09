@@ -4,6 +4,7 @@ from datetime import datetime
 from app.models import db, Sale, Receita_total_mes
 from flask_jwt_extended import jwt_required
 from app.swagger_config import swagger_template
+from app.handler.validacoes import validar_valor, validar_pendente, validar_data
 
 def init_sale_routes(app):
     @app.route("/sale", methods=["POST"])
@@ -15,45 +16,53 @@ def init_sale_routes(app):
         "parameters": swagger_template["paths"]["/sale"]["post"]["parameters"],
         "responses": swagger_template["paths"]["/sale"]["post"]["responses"]
     })
+    
     def create_sale():
         """Cria uma nova venda"""
-        data = request.get_json()
+        try:
+            data = request.get_json()
 
-    # Converte a string de data para objeto datetime.date
-        data_obj = datetime.strptime(data["data"], "%Y-%m-%d").date()
-        ano = data_obj.year
-        mes = data_obj.month
+            data_obj = validar_data(data.get("data"))
+            if not data_obj:
+                return jsonify({"error": "Formato de data inválido. Use o formato YYYY-MM-DD."}), 400
 
-        # Cria a nova venda
-        new_sale = Sale(
-            cliente_id=data["cliente_id"],
-            valor=data["valor"],
-            data=data_obj,
-            pendente=data.get("pendente", True)
-        )
+            if not validar_valor(data.get("valor")):
+                return jsonify({"error": "O valor deve ser um número positivo."}), 400
 
-        # Adiciona a venda ao banco
-        db.session.add(new_sale)
+            pendente = data.get("pendente", True)
+            if not validar_pendente(pendente):
+                return jsonify({"error": "O campo 'pendente' deve ser um valor booleano (True ou False).    "}), 400
 
-        # Verifica se já existe um registro para o ano e mês na tabela receita_total
-        receita_existente = Receita_total_mes.query.filter_by(ano=ano, mes=mes).first()
+            ano = data_obj.year
+            mes = data_obj.month
 
-        if receita_existente:
-            # Se existir, soma o valor da venda ao valor existente
-            receita_existente.receita_total_mes += data["valor"]
-        else:
-            # Se não existir, cria uma nova entrada para o ano e mês com o valor da venda
-            nova_receita = Receita_total_mes(
-                ano=ano,
-                mes=mes,
-                receita_total_mes=data["valor"]
+            new_sale = Sale(
+                cliente_id=data["cliente_id"],
+                valor=data["valor"],
+                data=data_obj,
+                pendente=pendente
             )
-            db.session.add(nova_receita)
 
-        # Salva as mudanças no banco de dados
-        db.session.commit()
+            db.session.add(new_sale)
 
-        return jsonify(new_sale.to_dict()), 201
+            receita_existente = Receita_total_mes.query.filter_by(ano=ano, mes=mes).first()
+
+            if receita_existente:
+                receita_existente.receita_total_mes += data["valor"]
+            else:
+                nova_receita = Receita_total_mes(
+                    ano=ano,
+                    mes=mes,
+                    receita_total_mes=data["valor"]
+                )
+                db.session.add(nova_receita)
+
+            db.session.commit()
+
+            return jsonify(new_sale.to_dict()), 201
+
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
 
     @app.route("/sale", methods=["GET"])
     @jwt_required()
@@ -63,10 +72,15 @@ def init_sale_routes(app):
         "security": [{"Bearer": []}],
         "responses": swagger_template["paths"]["/sale"]["get"]["responses"]
     })
+    
     def get_sales():
         """Retorna a lista de vendas"""
-        sales = Sale.query.all()
-        return jsonify([sale.to_dict() for sale in sales]), 200
+        try:
+            sales = Sale.query.all()
+            return jsonify([sale.to_dict() for sale in sales]), 200
+        
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
 
     @app.route("/sale/<int:id>", methods=["GET"])
     @jwt_required()
@@ -77,12 +91,17 @@ def init_sale_routes(app):
         "parameters": swagger_template["paths"]["/sale/{id}"]["get"]["parameters"],
         "responses": swagger_template["paths"]["/sale/{id}"]["get"]["responses"]
     })
+    
     def get_sales_by_id(id):
         """Busca uma venda pelo id"""
-        sale = Sale.query.filter_by(id=id).first()
-        if not sale:
-            return jsonify({"error": "Venda não encontrada"}), 404
-        return jsonify(sale.to_dict()), 200
+        try:
+            sale = Sale.query.filter_by(id=id).first()
+            if not sale:
+                return jsonify({"error": "Venda nao encontrada"}), 404
+            return jsonify(sale.to_dict()), 200
+        
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
 
     @app.route("/sale/<int:id>", methods=["PUT"])
     @jwt_required()
@@ -93,24 +112,40 @@ def init_sale_routes(app):
         "parameters": swagger_template["paths"]["/sale/{id}"]["put"]["parameters"],
         "responses": swagger_template["paths"]["/sale/{id}"]["put"]["responses"]
     })
+    
     def update_sale(id):
         """Atualiza as informações de uma venda pelo id"""
-        data = request.get_json()
-        sale = Sale.query.filter_by(id=id).first()
-        if not sale:
-            return jsonify({"error": "Venda não encontrada"}), 404
-        
-        if "data" in data:
-            sale.data = datetime.strptime(data["data"], "%Y-%m-%d").date()
-        
-        if "pendente" in data:
-            sale.pendente = data["pendente"]
+        try:
+            data = request.get_json()
+            sale = Sale.query.filter_by(id=id).first()
 
-        if "valor" in data:
-            sale.valor = data["valor"]
-            
-        db.session.commit()
-        return jsonify(sale.to_dict()), 200
+            if not sale:
+                return jsonify({"error": "Venda não encontrada"}), 404
+
+            if "data" in data:
+                data_obj = validar_data(data["data"])
+                if not data_obj:
+                    return jsonify({"error": "Formato de data inválido. Use o formato YYYY-MM-DD."}),   400
+                sale.data = data_obj
+
+            if "valor" in data:
+                if not validar_valor(data["valor"]):
+                    return jsonify({"error": "O valor deve ser um número positivo."}), 400
+                sale.valor = data["valor"]
+
+            if "pendente" in data:
+                if not validar_pendente(data["pendente"]):
+                    return jsonify({"error": "O campo 'pendente' deve ser um valor booleano (True ou    False)."}), 400
+                sale.pendente = data["pendente"]
+
+            if not any(key in data for key in ["data", "pendente", "valor"]):
+                return jsonify({"error": "Nenhum campo para atualização fornecido."}), 400
+
+            db.session.commit()
+            return jsonify(sale.to_dict()), 200
+
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
 
     @app.route("/sale/<int:id>", methods=["DELETE"])
     @jwt_required()
@@ -121,12 +156,17 @@ def init_sale_routes(app):
         "parameters": swagger_template["paths"]["/sale/{id}"]["delete"]["parameters"],
         "responses": swagger_template["paths"]["/sale/{id}"]["delete"]["responses"]
     })
+    
     def delete_sale(id):
         """Deleta uma venda pelo id"""
-        sale = Sale.query.filter_by(id=id).first()
-        if not sale:
-            return jsonify({"error": "Venda não encontrada"}), 404
+        try:
+            sale = Sale.query.filter_by(id=id).first()
+            if not sale:
+                return jsonify({"error": "Venda nao encontrada"}), 404
+
+            db.session.delete(sale)
+            db.session.commit()
+            return jsonify({"message": "Venda deletada com sucesso"}), 200
         
-        db.session.delete(sale)
-        db.session.commit()
-        return jsonify({"message": "Venda deletada com sucesso"})
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500

@@ -16,16 +16,21 @@ def init_login_routes(app):
     })
 
     def login():
-        """Autentica um usuário e gera um token JWT"""
-        data = request.get_json()
-        user = User.query.filter_by(email=data.get("email")).first()
+        try:
+            """Autentica um usuário e gera um token JWT"""
+            data = request.get_json()
+            
+            user = User.query.filter_by(email=data.get("email")).first()
 
-        if user and check_password_hash(user.senha, data.get("senha")):
-            token = jwt.encode({
-                "sub": user.id, 
-                "user_id": user.id,
-                "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=6)
-                }, str(app.config["JWT_SECRET_KEY"]), algorithm="HS256")
-            return jsonify(access_token=token), 200
+            if user and check_password_hash(user.senha, data.get("senha")):
+                token = jwt.encode({
+                    "sub": user.id, 
+                    "user_id": user.id,
+                    "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=6)
+                    }, str(app.config["JWT_SECRET_KEY"]), algorithm="HS256")
+                return jsonify(access_token=token), 200
+            else:
+                return jsonify({"msg": "Email ou senha incorretos"}), 401
         
-        return jsonify({"msg": "Email ou senha incorretos"}), 401
+        except Exception as e:
+            return jsonify({"error": f"Ocorreu um erro no servidor: {str(e)}"}), 500
