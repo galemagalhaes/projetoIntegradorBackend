@@ -4,11 +4,15 @@ from .models import db, DATABASE_URI, TRACK_MODIFICATIONS
 from .controllers import init_login_routes, init_user_routes, init_client_routes, init_sale_routes, init_dashboard_routes
 from flask_jwt_extended import JWTManager
 from .swagger_config import swagger_template
+from flask_cors import CORS
 
 
 def create_app():
     app = Flask(__name__)
 
+    # Permite CORS para todas as origens
+    CORS(app)
+    
     app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = TRACK_MODIFICATIONS
 
