@@ -1,6 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 
-DATABASE_URI = 'postgresql://postgres:qzDih07gwYKUnREP@vastly-wondrous-tardigrade.data-1.use1.tembo.io:5432/postgres'
+
 TRACK_MODIFICATIONS = False
 
 db = SQLAlchemy()
