@@ -5,7 +5,6 @@ TRACK_MODIFICATIONS = False
 
 db = SQLAlchemy()
 
-# Modelo de Cliente
 class Client(db.Model):
     __tablename__ = "clientes"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -29,7 +28,6 @@ class Client(db.Model):
             "telefone": self.telefone
         }
 
-# Modelo de Venda
 class Sale(db.Model):
     __tablename__ = "vendas"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -53,7 +51,6 @@ class Sale(db.Model):
             "pendente": self.pendente
         }
 
-# Modelo de Usuario
 class User(db.Model):
     __tablename__ = "usuario"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -73,7 +70,6 @@ class User(db.Model):
             "email": self.email
         }
 
-# Modelo Receita total mês
 class Receita_total_mes(db.Model):
     __tablename__ = "receita_total"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)

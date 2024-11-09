@@ -163,10 +163,22 @@ def init_sale_routes(app):
             sale = Sale.query.filter_by(id=id).first()
             if not sale:
                 return jsonify({"error": "Venda nao encontrada"}), 404
+            
+            ano = sale.data.year
+            mes = sale.data.month
+
+            receita_existente = Receita_total_mes.query.filter_by(ano=ano, mes=mes).first()
+
+            if receita_existente:
+                receita_existente.receita_total_mes -= sale.valor
+            
+            if receita_existente.receita_total_mes <= 0:
+                db.session.delete(receita_existente)
 
             db.session.delete(sale)
             db.session.commit()
-            return jsonify({"message": "Venda deletada com sucesso"}), 200
+            
+            return jsonify({"message": "Venda deletada com sucesso e a receita foi ajustada"}), 200
         
         except Exception as e:
             return jsonify({"error": str(e)}), 500
