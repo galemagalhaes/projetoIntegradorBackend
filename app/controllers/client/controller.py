@@ -30,7 +30,7 @@ def init_client_routes(app):
                 return jsonify({"error": "O campo 'email' e obrigatorio e deve ter um formato valido"}), 400
             
             if not validar_telefone(data["telefone"]):
-                return jsonify({"error": "O numero de telefone deve conter apenas 11 digitos numericos."}), 400
+                return jsonify({"error": "O numero de telefone deve conter entre 10 e 11 digitos numericos."}), 400
             
             if Client.query.filter_by(cpf=data["cpf"]).first():
                 return jsonify({"error": "CPF ja cadastrado"}), 400
@@ -116,7 +116,7 @@ def init_client_routes(app):
 
             if "telefone" in data:
                 if not validar_telefone(data["telefone"]):
-                    return jsonify({"error": "O numero de telefone deve conter apenas 11 digitos numericos."})
+                    return jsonify({"error": "O numero de telefone deve conter entre 10 e 11 digitos numericos."})
                 client.telefone = data["telefone"]
 
             db.session.commit()

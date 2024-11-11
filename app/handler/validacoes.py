@@ -8,7 +8,7 @@ def validar_email(email):
         return re.match(r"^(?!.*\.\.)[a-zA-Z0-9]+(?:[._%+-][a-zA-Z0-9]+)*@[a-zA-Z0-9]+(?:\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}$", email)
     
 def validar_telefone(telefone):
-    return re.match(r'^\d{11}$', telefone)
+    return re.match(r'^\d{10,11}$', telefone)
 
 def validar_cpf(cpf: str) -> bool:
     """Valida o CPF fornecido"""
